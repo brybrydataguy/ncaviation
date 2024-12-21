@@ -1,4 +1,6 @@
-import { useId } from 'react'
+'use client'
+
+import React, { useId } from 'react'
 import { type Metadata } from 'next'
 import Link from 'next/link'
 
@@ -33,29 +35,75 @@ function TextInput({
 }
 
 function ContactForm() {
+  const [status, setStatus] = React.useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setStatus('submitting')
+
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message'),
+    }
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      setStatus('success')
+      e.currentTarget.reset()
+    } catch (error) {
+      console.error('Error sending message:', error)
+      setStatus('error')
+    }
+  }
+
   return (
     <FadeIn className="lg:order-last">
-      <form>
+      <form onSubmit={handleSubmit}>
         <h2 className="font-display text-base font-semibold text-neutral-950">
           Contact Us
         </h2>
         <div className="isolate mt-6 -space-y-px rounded-2xl bg-white/50">
-          <TextInput label="Name" name="name" autoComplete="name" />
+          <TextInput label="Name" name="name" autoComplete="name" required />
           <TextInput
             label="Email"
             type="email"
             name="email"
             autoComplete="email"
+            required
           />
           <TextInput 
             label="Message" 
             name="message"
-            className="min-h-[100px]" 
+            className="min-h-[100px]"
+            required
           />
         </div>
-        <Button type="submit" className="mt-10">
-          Send Message
+        <Button 
+          type="submit" 
+          className="mt-10"
+          disabled={status === 'submitting'}
+        >
+          {status === 'submitting' ? 'Sending...' : 'Send Message'}
         </Button>
+        {status === 'success' && (
+          <p className="mt-4 text-sm text-green-600">Message sent successfully!</p>
+        )}
+        {status === 'error' && (
+          <p className="mt-4 text-sm text-red-600">Failed to send message. Please try again.</p>
+        )}
       </form>
     </FadeIn>
   )
@@ -88,11 +136,6 @@ function ContactDetails() {
       </dl>
     </FadeIn>
   )
-}
-
-export const metadata: Metadata = {
-  title: 'Contact NC Aviation',
-  description: 'Contact NC Aviation for expert aircraft sales and acquisitions.',
 }
 
 export default function Contact() {
