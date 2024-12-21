@@ -10,6 +10,12 @@ To get started with this template, first install the npm dependencies:
 npm install
 ```
 
+To run the linter:
+
+```bash
+npm run lint
+```
+
 Next, run the development server:
 
 ```bash
