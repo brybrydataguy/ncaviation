@@ -12,18 +12,18 @@ export default function RecentlySoldPage() {
   const soldAircraft = [
     {
       title: '1997 Citation X',
-      image: '/placeholder-citation-x.jpg',
-      alt: '1997 Citation X Aircraft'
+      image: '/images/aircraft/citation-x.jpg',
+      alt: '1997 Citation X Aircraft - NC Aviation'
     },
     {
       title: '2008 Gulfstream G-200',
-      image: '/placeholder-gulfstream-g200.jpg',
-      alt: '2008 Gulfstream G-200 Aircraft'
+      image: '/images/aircraft/gulfstream-g200.jpg',
+      alt: '2008 Gulfstream G-200 Aircraft - NC Aviation'
     },
     {
       title: '2006 Citation Sovereign',
-      image: '/placeholder-citation-sovereign.jpg',
-      alt: '2006 Citation Sovereign Aircraft'
+      image: '/images/aircraft/citation-sovereign.jpg',
+      alt: '2006 Citation Sovereign Aircraft - NC Aviation'
     }
   ]
 
