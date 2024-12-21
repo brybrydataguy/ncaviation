@@ -58,15 +58,20 @@ export function Logo({
       className={clsx(fillOnHover && 'group/logo', className)}
       {...props}
     >
-      <Logomark
-        preserveAspectRatio="xMinYMid meet"
-        invert={invert}
-        filled={filled}
-      />
-      <path
-        className={invert ? 'fill-white' : 'fill-neutral-950'}
-        d="M52 23.5h7l2-4.5h-3v-9h3l-2-4.5h-7v18zm11 0h4l6-18h-4l-4 12-4-12h-4l6 18zm13 0h7v-7.5h8v7.5h7v-18h-7v6.5h-8v-6.5h-7v18zm21 0h7l2-4.5h-3v-9h3l-2-4.5h-7v18zm15 0h14v-4h-7v-3h6v-4h-6v-3h7v-4h-14v18z"
-      />
+      <rect x="0" y="5" width="30" height="30" fill="black"/>
+      <text x="15" y="25"
+            font-family="Arial, sans-serif"
+            font-size="16"
+            font-weight="bold"
+            text-anchor="middle"
+            fill="white">NC</text>
+            
+      <text x="65" y="25"
+            font-family="Arial, sans-serif"
+            font-size="16"
+            font-weight="bold"
+            text-anchor="middle"
+            fill="black">Aviation</text>
     </svg>
   )
 }
