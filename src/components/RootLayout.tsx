@@ -81,15 +81,6 @@ function Header({
           <Button href="/contact" invert={invert}>
             Contact us
           </Button>
-          {!session ? (
-            <Button onClick={() => signIn('google')} invert={invert}>
-              Login
-            </Button>
-          ) : (
-            <Button onClick={() => signOut()} invert={invert}>
-              Logout
-            </Button>
-          )}
           <button
             ref={toggleRef}
             type="button"
