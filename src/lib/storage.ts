@@ -1,5 +1,5 @@
 import { storage } from './firebase'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 
 /**
  * Uploads an image to Firebase Storage and returns the download URL
@@ -34,5 +34,20 @@ export async function uploadImages(files: File[], basePath: string): Promise<str
   } catch (error) {
     console.error('Error uploading images:', error)
     throw new Error('Failed to upload images')
+  }
+}
+
+/**
+ * Deletes an image from Firebase Storage
+ * @param path - The path of the image to delete (e.g., 'planes/image.jpg')
+ * @returns Promise<void>
+ */
+export async function deleteImage(path: string): Promise<void> {
+  try {
+    const storageRef = ref(storage, path)
+    await deleteObject(storageRef)
+  } catch (error) {
+    console.error('Error deleting image:', error)
+    throw new Error('Failed to delete image')
   }
 }
