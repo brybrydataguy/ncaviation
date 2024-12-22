@@ -12,6 +12,9 @@ const handler = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ profile }) {
+      return profile?.email === "bryantravissmith@gmail.com"
+    },
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token
