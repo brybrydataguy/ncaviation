@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { motion, MotionConfig, useReducedMotion } from 'framer-motion'
+import { signIn, signOut, useSession } from 'next-auth/react'
 
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
@@ -59,6 +60,7 @@ function Header({
   invert?: boolean
 }) {
   let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
+  const { data: session } = useSession()
 
   return (
     <Container>
@@ -79,6 +81,15 @@ function Header({
           <Button href="/contact" invert={invert}>
             Contact us
           </Button>
+          {!session ? (
+            <Button onClick={() => signIn('google')} invert={invert}>
+              Login
+            </Button>
+          ) : (
+            <Button onClick={() => signOut()} invert={invert}>
+              Logout
+            </Button>
+          )}
           <button
             ref={toggleRef}
             type="button"
