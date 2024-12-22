@@ -3,6 +3,7 @@
 import { type Metadata } from 'next'
 import { SessionProvider } from "next-auth/react"
 import { RootLayout } from '@/components/RootLayout'
+import { firebaseApp, getFirebaseAnalytics } from '@/lib/firebase'
 
 import '@/styles/tailwind.css'
 
