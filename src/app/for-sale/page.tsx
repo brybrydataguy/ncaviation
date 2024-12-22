@@ -1,96 +1,123 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useId } from 'react'
 import { type Metadata } from 'next'
 import { Container } from '@/components/Container'
 import { PageIntro } from '@/components/PageIntro'
 import { Button } from '@/components/Button'
+import { FadeIn } from '@/components/FadeIn'
+
+function TextInput({
+  label,
+  ...props
+}: React.ComponentPropsWithoutRef<'input'> & { label: string }) {
+  let id = useId()
+
+  return (
+    <div className="group relative z-0 transition-all focus-within:z-10">
+      <input
+        type="text"
+        id={id}
+        {...props}
+        placeholder=" "
+        className="peer block w-full border border-neutral-300 bg-transparent px-6 pb-4 pt-12 text-base/6 text-neutral-950 ring-4 ring-transparent transition focus:border-neutral-950 focus:outline-none focus:ring-neutral-950/5 group-first:rounded-t-2xl group-last:rounded-b-2xl"
+      />
+      <label
+        htmlFor={id}
+        className="pointer-events-none absolute left-6 top-1/2 -mt-3 origin-left text-base/6 text-neutral-500 transition-all duration-200 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-semibold peer-focus:text-neutral-950 peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:scale-75 peer-[:not(:placeholder-shown)]:font-semibold peer-[:not(:placeholder-shown)]:text-neutral-950"
+      >
+        {label}
+      </label>
+    </div>
+  )
+}
 
 export default function ForSalePage() {
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const formRef = React.useRef<HTMLFormElement>(null)
+  const [status, setStatus] = React.useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setStatus('submitting')
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message') || 'I am interested in receiving updates about aircraft for sale.',
+    }
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      setStatus('success')
+      form.reset()
+    } catch (error) {
+      console.error('Error sending message:', error)
+      setStatus('error')
+    }
+  }
+
   return (
     <>
       <PageIntro eyebrow="Listings" title="For Sale">
-        <p className="mt-6 text-xl text-neutral-600">Coming Soon</p>
-        <p className="mt-4 text-lg text-neutral-600">
-          Sign up to hear when we post planes for sale.
+        <p className="mt-6 text-xl text-neutral-600">
+          Interested in our aircraft listings? Fill out the form below to receive updates about new aircraft for sale.
         </p>
       </PageIntro>
 
-      <Container className="mt-16 sm:mt-20">
-        <div className="max-w-md">
-          <form onSubmit={async (e) => {
-            e.preventDefault()
-            const formData = new FormData(e.currentTarget)
-            const email = formData.get('email')
-
-            try {
-              const response = await fetch('/api/contact', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  name: 'Aircraft For Sale Inquiry',
-                  email,
-                  message: 'I am interested in receiving updates about aircraft for sale.',
-                }),
-              })
-
-              if (!response.ok) {
-                throw new Error('Failed to submit')
-              }
-
-              setStatus('success')
-              e.currentTarget.reset()
-            } catch (error) {
-              console.error('Error submitting form:', error)
-              setStatus('error')
-            }
-          }}>
-            <div className="relative">
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                placeholder="Type your email…"
-                className="block w-full rounded-2xl border border-neutral-300 bg-transparent py-4 pl-6 pr-20 text-base/6 text-neutral-950 ring-4 ring-transparent transition placeholder:text-neutral-500 focus:border-neutral-950 focus:outline-none focus:ring-neutral-950/5"
-              />
-              <div className="absolute inset-y-1 right-1">
-                <Button
-                  type="submit"
-                  disabled={status === 'submitting'}
-                  className="flex aspect-square h-full items-center justify-center rounded-xl bg-neutral-950 text-white transition hover:bg-neutral-800"
-                >
-                  <span className="sr-only">
-                    {status === 'submitting' ? 'Submitting...' : 'Submit'}
-                  </span>
-                  <svg viewBox="0 0 16 6" aria-hidden="true" className="w-4">
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M16 3 10 .5v2H0v1h10v2L16 3Z"
-                    />
-                  </svg>
-                </Button>
+      <Container className="mt-24 sm:mt-32 lg:mt-40">
+        <div className="mx-auto max-w-lg">
+          <FadeIn>
+            <form ref={formRef} onSubmit={handleSubmit}>
+              <h2 className="font-display text-base font-semibold text-neutral-950">
+                Request Information
+              </h2>
+              <div className="isolate mt-6 -space-y-px rounded-2xl bg-white/50">
+                <TextInput label="Name" name="name" autoComplete="name" required />
+                <TextInput
+                  label="Email"
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  required
+                />
+                <TextInput 
+                  label="Message (Optional)" 
+                  name="message"
+                  className="min-h-[100px]"
+                />
               </div>
-            </div>
-            {status === 'success' && (
-              <p className="mt-4 text-sm text-green-600">
-                Thank you! You will receive updates about new aircraft listings.
-              </p>
-            )}
-            {status === 'error' && (
-              <p className="mt-4 text-sm text-red-600">
-                Something went wrong. Please try again.
-              </p>
-            )}
-          </form>
+              <Button 
+                type="submit" 
+                className="mt-10"
+                disabled={status === 'submitting'}
+              >
+                {status === 'submitting' ? 'Sending...' : 'Request Information'}
+              </Button>
+              {status === 'success' && (
+                <p className="mt-4 text-sm text-green-600">
+                  Thank you! We'll keep you updated about new aircraft listings.
+                </p>
+              )}
+              {status === 'error' && (
+                <p className="mt-4 text-sm text-red-600">
+                  Something went wrong. Please try again.
+                </p>
+              )}
+            </form>
+          </FadeIn>
         </div>
       </Container>
     </>
