@@ -35,13 +35,16 @@ function TextInput({
 }
 
 function ContactForm() {
+  const formRef = React.useRef<HTMLFormElement>(null)
   const [status, setStatus] = React.useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setStatus('submitting')
 
-    const formData = new FormData(e.currentTarget)
+    // Get form data before any async operations
+    const form = e.currentTarget
+    const formData = new FormData(form)
     const data = {
       name: formData.get('name'),
       email: formData.get('email'),
@@ -62,7 +65,7 @@ function ContactForm() {
       }
 
       setStatus('success')
-      e.currentTarget.reset()
+      form.reset() // Reset the form after successful submission
     } catch (error) {
       console.error('Error sending message:', error)
       setStatus('error')
@@ -71,7 +74,7 @@ function ContactForm() {
 
   return (
     <FadeIn className="lg:order-last">
-      <form onSubmit={handleSubmit}>
+      <form ref={formRef} onSubmit={handleSubmit}>
         <h2 className="font-display text-base font-semibold text-neutral-950">
           Contact Us
         </h2>

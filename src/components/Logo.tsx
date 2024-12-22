@@ -54,23 +54,23 @@ export function Logo({
   return (
     <svg
       viewBox="0 0 200 32"
-      aria-hidden="true"
+      aria-hidden={true}
       className={clsx(fillOnHover && 'group/logo', className)}
       {...props}
     >
       <rect x="0" y="5" width="30" height="30" fill="black"/>
       <text x="15" y="25"
-            font-family="Arial, sans-serif"
-            font-size="16"
-            font-weight="bold"
-            text-anchor="middle"
+            fontFamily="Arial, sans-serif"
+            fontSize="16"
+            fontWeight="bold"
+            textAnchor="middle"
             fill="white">NC</text>
             
       <text x="65" y="25"
-            font-family="Arial, sans-serif"
-            font-size="16"
-            font-weight="bold"
-            text-anchor="middle"
+            fontFamily="Arial, sans-serif"
+            fontSize="16"
+            fontWeight="bold"
+            textAnchor="middle"
             fill="black">Aviation</text>
     </svg>
   )

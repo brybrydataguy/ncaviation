@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { type Metadata } from 'next'
 import { Container } from '@/components/Container'
 import { PageIntro } from '@/components/PageIntro'
@@ -39,11 +40,16 @@ export default function RecentlySoldPage() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {soldAircraft.map((aircraft) => (
             <div key={aircraft.title} className="group relative overflow-hidden rounded-3xl bg-neutral-100">
-              <div className="aspect-h-9 aspect-w-16 relative">
-                <img
+              <div className="aspect-h-9 aspect-w-16 relative h-[300px]">
+                <Image
                   src={aircraft.image}
                   alt={aircraft.alt}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
+                  priority
+                  quality={90}
+                  loading="eager"
                 />
               </div>
               <div className="p-4">
