@@ -10,7 +10,16 @@ if (typeof window !== 'undefined') {
 
 export async function GET(req: NextRequest) {
   try {
-    const planes = await getPlanes()
+    const { searchParams } = new URL(req.url)
+    const statusFilter = searchParams.get('status')
+    
+    let planes = await getPlanes()
+    
+    // Filter by status if provided
+    if (statusFilter && ['sale', 'pending', 'sold'].includes(statusFilter)) {
+      planes = planes.filter((plane) => plane.status === statusFilter)
+    }
+    
     return NextResponse.json(planes)
   } catch (error) {
     console.error('Error fetching planes:', error)
