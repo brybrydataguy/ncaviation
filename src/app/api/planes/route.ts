@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ id: newPlaneId }, { status: 201 })
   } catch (error) {
     console.error('Error creating plane:', error)
-    return NextResponse.json({ error: 'Failed to create plane' }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return NextResponse.json({ error: `Failed to create plane: ${errorMessage}` }, { status: 500 })
   }
 }
 
@@ -35,7 +36,8 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ message: 'Plane updated successfully' })
   } catch (error) {
     console.error('Error updating plane:', error)
-    return NextResponse.json({ error: 'Failed to update plane' }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return NextResponse.json({ error: `Failed to update plane: ${errorMessage}` }, { status: 500 })
   }
 }
 
@@ -50,6 +52,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ message: 'Plane deleted successfully' })
   } catch (error) {
     console.error('Error deleting plane:', error)
-    return NextResponse.json({ error: 'Failed to delete plane' }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return NextResponse.json({ error: `Failed to delete plane: ${errorMessage}` }, { status: 500 })
   }
 }
