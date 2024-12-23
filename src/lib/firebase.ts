@@ -15,9 +15,8 @@ const firebaseConfig = {
 
 // Initialize Firebase only if it hasn't been initialized already
 export const firebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0]
-
 // Initialize services
-export const db = getFirestore(firebaseApp)
+export const db = getFirestore(firebaseApp, 'ncaviation')
 export const storage = getStorage(firebaseApp)
 
 // Initialize Analytics and export it

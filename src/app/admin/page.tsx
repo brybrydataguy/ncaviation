@@ -7,6 +7,7 @@ import { PageIntro } from "@/components/PageIntro"
 import { createPlane, getPlanes, updatePlane, deletePlane } from '@/lib/planes'
 import { uploadImage, uploadImages } from '@/lib/storage'
 import type { Aircraft } from '@/types/plane'
+import Image from 'next/image'
 
 export default function AdminPage(): React.ReactElement {
   const { data: session, status } = useSession()
@@ -14,10 +15,11 @@ export default function AdminPage(): React.ReactElement {
   const [loading, setLoading] = useState(true)
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
+  console.log(session)
   useEffect(() => {
     async function fetchPlanes() {
-      try {
-        const planesData = await getPlanes()
+     try {
+        const planesData = await fetch('/api/planes').then((res) => res.json())
         setPlanes(planesData)
       } catch (error) {
         console.error('Error fetching planes:', error)
@@ -218,13 +220,15 @@ export default function AdminPage(): React.ReactElement {
                     </span>
                   </div>
                   <p className="mt-2 text-neutral-300">${plane.price.toLocaleString()}</p>
-                  <div className="mt-4">
-                    <img
+                    <div className="mt-4">
+                    <Image
                       src={plane.mainImage}
                       alt={plane.name}
+                      width={500}
+                      height={200}
                       className="w-full h-48 object-cover rounded-lg"
                     />
-                  </div>
+                    </div>
                 </div>
               ))}
               {planes.length === 0 && (
