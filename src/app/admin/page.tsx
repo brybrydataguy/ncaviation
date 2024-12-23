@@ -56,11 +56,21 @@ export default function AdminPage(): React.ReactElement {
         images: additionalImageUrls
       }
 
-      // Save to Firestore
-      await createPlane(planeData)
-      
+      // Save plane via API
+      const response = await fetch('/api/planes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(planeData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create plane')
+      }
+
       // Refresh planes list
-      const updatedPlanes = await getPlanes()
+      const updatedPlanes = await fetch('/api/planes').then(res => res.json())
       setPlanes(updatedPlanes)
       
       setFormStatus('success')
@@ -210,17 +220,51 @@ export default function AdminPage(): React.ReactElement {
                 <div key={plane.id} className="bg-neutral-800 p-6 rounded-lg">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium text-neutral-100">{plane.name}</h3>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      plane.status === 'sale' ? 'bg-green-500/10 text-green-400' :
-                      plane.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
-                      'bg-red-500/10 text-red-400'
-                    }`}>
-                      {plane.status === 'sale' ? 'For Sale' :
-                       plane.status === 'pending' ? 'Pending' : 'Sold'}
-                    </span>
+                    <div className="flex items-center space-x-4">
+                      <select
+                        value={plane.status}
+                        onChange={async (e) => {
+                          try {
+                            const response = await fetch(`/api/planes?id=${plane.id}`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ status: e.target.value }),
+                            })
+                            if (!response.ok) throw new Error('Failed to update status')
+                            const updatedPlanes = await fetch('/api/planes').then(res => res.json())
+                            setPlanes(updatedPlanes)
+                          } catch (error) {
+                            console.error('Error updating plane status:', error)
+                          }
+                        }}
+                        className="bg-neutral-700 text-neutral-100 rounded-md px-2 py-1 text-sm"
+                      >
+                        <option value="sale">For Sale</option>
+                        <option value="pending">Pending</option>
+                        <option value="sold">Sold</option>
+                      </select>
+                      <button
+                        onClick={async () => {
+                          if (!confirm('Are you sure you want to delete this aircraft?')) return
+                          try {
+                            const response = await fetch(`/api/planes?id=${plane.id}`, {
+                              method: 'DELETE',
+                            })
+                            if (!response.ok) throw new Error('Failed to delete plane')
+                            const updatedPlanes = await fetch('/api/planes').then(res => res.json())
+                            setPlanes(updatedPlanes)
+                          } catch (error) {
+                            console.error('Error deleting plane:', error)
+                          }
+                        }}
+                        className="bg-red-500/10 text-red-400 px-3 py-1 rounded-md text-sm hover:bg-red-500/20"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                   <p className="mt-2 text-neutral-300">${plane.price.toLocaleString()}</p>
-                    <div className="mt-4">
+                  <div className="mt-4">
                     <Image
                       src={plane.mainImage}
                       alt={plane.name}
@@ -228,7 +272,7 @@ export default function AdminPage(): React.ReactElement {
                       height={200}
                       className="w-full h-48 object-cover rounded-lg"
                     />
-                    </div>
+                  </div>
                 </div>
               ))}
               {planes.length === 0 && (
