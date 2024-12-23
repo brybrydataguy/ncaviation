@@ -12,9 +12,9 @@ export async function POST(req: NextRequest) {
     const { name, email, message } = await req.json()
     
     const [response] = await sgMail.send({
-      to: 'bryantravissmith@gmail.com',
+      to: 'bob@ncaviation.com',
       from: 'me@brybrydataguy.com',
-      subject: 'New Contact Form Submission',
+      subject: 'New Contact Form Submission from NC Aviation',
       text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
       html: `
 <p><strong>Name:</strong> ${name}</p>
