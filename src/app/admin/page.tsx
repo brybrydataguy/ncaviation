@@ -6,11 +6,11 @@ import { Container } from "@/components/Container"
 import { PageIntro } from "@/components/PageIntro"
 import { createPlane, getPlanes, updatePlane, deletePlane } from '@/lib/planes'
 import { uploadImage, uploadImages } from '@/lib/storage'
-import type { AircraftPlan } from '@/types/plane'
+import type { Aircraft } from '@/types/plane'
 
 export default function AdminPage(): React.ReactElement {
   const { data: session, status } = useSession()
-  const [planes, setPlanes] = useState<(AircraftPlan & { id: string })[]>([])
+  const [planes, setPlanes] = useState<(Aircraft & { id: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
@@ -46,10 +46,10 @@ export default function AdminPage(): React.ReactElement {
       const additionalImageUrls = await uploadImages(additionalImageFiles, 'planes')
 
       // Create plane data
-      const planeData: AircraftPlan = {
+      const planeData: Aircraft = {
         name: formData.get('name') as string,
         price: Number(formData.get('price')),
-        status: formData.get('status') as AircraftPlan['status'],
+        status: formData.get('status') as Aircraft['status'],
         mainImage: mainImageUrl,
         images: additionalImageUrls
       }

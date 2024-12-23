@@ -108,7 +108,7 @@ export default function ForSalePage() {
               </Button>
               {status === 'success' && (
                 <p className="mt-4 text-sm text-green-600">
-                  Thank you! We'll keep you updated about new aircraft listings.
+                  Thank you! We will keep you updated about new aircraft listings.
                 </p>
               )}
               {status === 'error' && (

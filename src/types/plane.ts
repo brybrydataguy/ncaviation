@@ -1,4 +1,4 @@
-export interface AircraftPlan {
+export interface Aircraft {
   name: string
   price: number
   status: 'sale' | 'sold' | 'pending'

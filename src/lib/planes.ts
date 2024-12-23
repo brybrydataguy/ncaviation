@@ -12,12 +12,12 @@ import {
   DocumentData,
   QueryDocumentSnapshot 
 } from 'firebase/firestore'
-import { AircraftPlan } from '@/types/plane'
+import { Aircraft } from '@/types/plane'
 
 const planesCollection = collection(db, 'planes')
 
-// Convert Firestore document to AircraftPlan type
-const convertDoc = (doc: QueryDocumentSnapshot<DocumentData>): AircraftPlan & { id: string } => {
+// Convert Firestore document to Aircraft type
+const convertDoc = (doc: QueryDocumentSnapshot<DocumentData>): Aircraft & { id: string } => {
   const data = doc.data()
   return {
     id: doc.id,
@@ -30,7 +30,7 @@ const convertDoc = (doc: QueryDocumentSnapshot<DocumentData>): AircraftPlan & { 
 }
 
 // Create a new plane
-export async function createPlane(data: AircraftPlan) {
+export async function createPlane(data: Aircraft) {
   const docRef = await addDoc(planesCollection, data)
   return docRef.id
 }
@@ -42,7 +42,7 @@ export async function getPlanes() {
 }
 
 // Get planes by status
-export async function getPlanesByStatus(status: AircraftPlan['status']) {
+export async function getPlanesByStatus(status: Aircraft['status']) {
   const q = query(planesCollection, where("status", "==", status))
   const snapshot = await getDocs(q)
   return snapshot.docs.map(convertDoc)
@@ -59,7 +59,7 @@ export async function getPlane(id: string) {
 }
 
 // Update a plane
-export async function updatePlane(id: string, data: Partial<AircraftPlan>) {
+export async function updatePlane(id: string, data: Partial<Aircraft>) {
   const docRef = doc(db, 'planes', id)
   await updateDoc(docRef, data)
   return id

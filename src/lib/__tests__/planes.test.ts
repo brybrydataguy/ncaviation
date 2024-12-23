@@ -1,7 +1,7 @@
 import { collection, addDoc, getDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase'
 import { createPlane, getPlane, updatePlane, deletePlane } from '../planes'
-import type { AircraftPlan } from '@/types/plane'
+import type { Aircraft } from '@/types/plane'
 
 // Mock Firestore
 jest.mock('firebase/firestore', () => ({
@@ -18,7 +18,7 @@ jest.mock('../firebase', () => ({
 }))
 
 describe('Planes CRUD Operations', () => {
-  const mockPlane: AircraftPlan = {
+  const mockPlane: Aircraft = {
     name: 'Test Aircraft',
     price: 1000000,
     status: 'sale',
