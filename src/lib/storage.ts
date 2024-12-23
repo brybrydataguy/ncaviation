@@ -1,6 +1,11 @@
 import { storage } from './firebase'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 
+// Ensure this file is only imported server-side
+if (typeof window !== 'undefined') {
+  throw new Error('storage.ts should only be imported server-side')
+}
+
 /**
  * Uploads an image to Firebase Storage and returns the download URL
  * @param file - The file to upload

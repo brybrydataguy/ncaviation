@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { useSession } from "next-auth/react"
 import { Container } from "@/components/Container"
 import { PageIntro } from "@/components/PageIntro"
-import { createPlane, getPlanes, updatePlane, deletePlane } from '@/lib/planes'
-import { uploadImage, uploadImages } from '@/lib/storage'
 import type { Aircraft } from '@/types/plane'
 import Image from 'next/image'
 
@@ -39,30 +37,10 @@ export default function AdminPage(): React.ReactElement {
       const form = e.currentTarget
       const formData = new FormData(form)
       
-      // Handle image uploads
-      const mainImageFile = (formData.get('mainImage') as File)
-      const additionalImageFiles = Array.from(formData.getAll('images') as File[])
-      
-      // Upload images to Firebase Storage
-      const mainImageUrl = await uploadImage(mainImageFile, `planes/${Date.now()}-${mainImageFile.name}`)
-      const additionalImageUrls = await uploadImages(additionalImageFiles, 'planes')
-
-      // Create plane data
-      const planeData: Aircraft = {
-        name: formData.get('name') as string,
-        price: Number(formData.get('price')),
-        status: formData.get('status') as Aircraft['status'],
-        mainImage: mainImageUrl,
-        images: additionalImageUrls
-      }
-
-      // Save plane via API
+      // Send form data directly to API
       const response = await fetch('/api/planes', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(planeData),
+        body: formData, // FormData automatically sets the correct Content-Type
       })
 
       if (!response.ok) {
@@ -225,10 +203,11 @@ export default function AdminPage(): React.ReactElement {
                         value={plane.status}
                         onChange={async (e) => {
                           try {
+                            const updateData = new FormData()
+                            updateData.append('status', e.target.value)
                             const response = await fetch(`/api/planes?id=${plane.id}`, {
                               method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ status: e.target.value }),
+                              body: updateData,
                             })
                             if (!response.ok) throw new Error('Failed to update status')
                             const updatedPlanes = await fetch('/api/planes').then(res => res.json())
