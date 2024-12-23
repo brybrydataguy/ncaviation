@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { useSession } from "next-auth/react"
 import { Container } from "@/components/Container"
 import { PageIntro } from "@/components/PageIntro"
-import { createPlane, getPlanes, updatePlane, deletePlane } from '@/lib/planes'
-import { uploadImage, uploadImages } from '@/lib/storage'
 import type { Aircraft } from '@/types/plane'
 import Image from 'next/image'
 
@@ -39,28 +37,18 @@ export default function AdminPage(): React.ReactElement {
       const form = e.currentTarget
       const formData = new FormData(form)
       
-      // Handle image uploads
-      const mainImageFile = (formData.get('mainImage') as File)
-      const additionalImageFiles = Array.from(formData.getAll('images') as File[])
-      
-      // Upload images to Firebase Storage
-      const mainImageUrl = await uploadImage(mainImageFile, `planes/${Date.now()}-${mainImageFile.name}`)
-      const additionalImageUrls = await uploadImages(additionalImageFiles, 'planes')
+      // Send form data directly to API
+      const response = await fetch('/api/planes', {
+        method: 'POST',
+        body: formData, // FormData automatically sets the correct Content-Type
+      })
 
-      // Create plane data
-      const planeData: Aircraft = {
-        name: formData.get('name') as string,
-        price: Number(formData.get('price')),
-        status: formData.get('status') as Aircraft['status'],
-        mainImage: mainImageUrl,
-        images: additionalImageUrls
+      if (!response.ok) {
+        throw new Error('Failed to create plane')
       }
 
-      // Save to Firestore
-      await createPlane(planeData)
-      
       // Refresh planes list
-      const updatedPlanes = await getPlanes()
+      const updatedPlanes = await fetch('/api/planes').then(res => res.json())
       setPlanes(updatedPlanes)
       
       setFormStatus('success')
@@ -210,17 +198,52 @@ export default function AdminPage(): React.ReactElement {
                 <div key={plane.id} className="bg-neutral-800 p-6 rounded-lg">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium text-neutral-100">{plane.name}</h3>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      plane.status === 'sale' ? 'bg-green-500/10 text-green-400' :
-                      plane.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
-                      'bg-red-500/10 text-red-400'
-                    }`}>
-                      {plane.status === 'sale' ? 'For Sale' :
-                       plane.status === 'pending' ? 'Pending' : 'Sold'}
-                    </span>
+                    <div className="flex items-center space-x-4">
+                      <select
+                        value={plane.status}
+                        onChange={async (e) => {
+                          try {
+                            const updateData = new FormData()
+                            updateData.append('status', e.target.value)
+                            const response = await fetch(`/api/planes?id=${plane.id}`, {
+                              method: 'PUT',
+                              body: updateData,
+                            })
+                            if (!response.ok) throw new Error('Failed to update status')
+                            const updatedPlanes = await fetch('/api/planes').then(res => res.json())
+                            setPlanes(updatedPlanes)
+                          } catch (error) {
+                            console.error('Error updating plane status:', error)
+                          }
+                        }}
+                        className="bg-neutral-700 text-neutral-100 rounded-md px-2 py-1 text-sm"
+                      >
+                        <option value="sale">For Sale</option>
+                        <option value="pending">Pending</option>
+                        <option value="sold">Sold</option>
+                      </select>
+                      <button
+                        onClick={async () => {
+                          if (!confirm('Are you sure you want to delete this aircraft?')) return
+                          try {
+                            const response = await fetch(`/api/planes?id=${plane.id}`, {
+                              method: 'DELETE',
+                            })
+                            if (!response.ok) throw new Error('Failed to delete plane')
+                            const updatedPlanes = await fetch('/api/planes').then(res => res.json())
+                            setPlanes(updatedPlanes)
+                          } catch (error) {
+                            console.error('Error deleting plane:', error)
+                          }
+                        }}
+                        className="bg-red-500/10 text-red-400 px-3 py-1 rounded-md text-sm hover:bg-red-500/20"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                   <p className="mt-2 text-neutral-300">${plane.price.toLocaleString()}</p>
-                    <div className="mt-4">
+                  <div className="mt-4">
                     <Image
                       src={plane.mainImage}
                       alt={plane.name}
@@ -228,7 +251,7 @@ export default function AdminPage(): React.ReactElement {
                       height={200}
                       className="w-full h-48 object-cover rounded-lg"
                     />
-                    </div>
+                  </div>
                 </div>
               ))}
               {planes.length === 0 && (

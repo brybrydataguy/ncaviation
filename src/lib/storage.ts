@@ -1,6 +1,11 @@
 import { storage } from './firebase'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 
+// Ensure this file is only imported server-side
+if (typeof window !== 'undefined') {
+  throw new Error('storage.ts should only be imported server-side')
+}
+
 /**
  * Uploads an image to Firebase Storage and returns the download URL
  * @param file - The file to upload
@@ -9,11 +14,18 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
  */
 export async function uploadImage(file: File, path: string): Promise<string> {
   try {
+    console.log('Starting image upload to path:', path)
     const storageRef = ref(storage, path)
+    console.log('Created storage reference, attempting upload...')
     await uploadBytes(storageRef, file)
-    return await getDownloadURL(storageRef)
+    console.log('Upload successful, getting download URL...')
+    const url = await getDownloadURL(storageRef)
+    console.log('Image upload complete. Download URL:', url)
+    return url
   } catch (error) {
     console.error('Error uploading image:', error)
+    console.error('Failed path:', path)
+    console.error('File details:', { name: file.name, size: file.size, type: file.type })
     throw new Error('Failed to upload image')
   }
 }
@@ -26,13 +38,19 @@ export async function uploadImage(file: File, path: string): Promise<string> {
  */
 export async function uploadImages(files: File[], basePath: string): Promise<string[]> {
   try {
+    console.log('Starting batch upload of', files.length, 'images to base path:', basePath)
     const uploadPromises = files.map((file, index) => {
       const path = `${basePath}/${Date.now()}-${index}-${file.name}`
+      console.log('Queuing upload for file:', file.name, 'to path:', path)
       return uploadImage(file, path)
     })
-    return await Promise.all(uploadPromises)
+    const urls = await Promise.all(uploadPromises)
+    console.log('Batch upload complete. Successfully uploaded', urls.length, 'images')
+    return urls
   } catch (error) {
     console.error('Error uploading images:', error)
+    console.error('Base path:', basePath)
+    console.error('Files details:', files.map(f => ({ name: f.name, size: f.size, type: f.type })))
     throw new Error('Failed to upload images')
   }
 }

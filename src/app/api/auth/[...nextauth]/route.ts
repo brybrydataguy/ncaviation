@@ -8,11 +8,6 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
   ],
-  callbacks: {
-    async signIn({ profile }) {
-      return profile?.email === "bryantravissmith@gmail.com"
-    },
-  },
 })
 
 export { handler as GET, handler as POST }
