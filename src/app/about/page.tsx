@@ -16,7 +16,7 @@ export default function About() {
         </p>
         <div className="mt-10 max-w-2xl space-y-6 text-base">
           <p>
-            Bob Kalhori is the founder and president of NC Aviation, Inc., bringing over 32 years of experience in the aviation industry. As an FAA Designated Check Airman and Examiner, Bob&apos;s expertise and dedication to aviation excellence have established NC Aviation as a trusted name in aircraft sales and acquisitions.
+            Bob Kalhori is the founder and president of NC Aviation, Inc., bringing over 35 years of experience in the aviation industry. As an FAA Designated Check Airman and Examiner, Bob&apos;s expertise and dedication to aviation excellence have established NC Aviation as a trusted name in aircraft sales and acquisitions.
           </p>
           <p>
             Throughout his career, Bob has maintained the highest standards of professionalism and integrity in every transaction. His comprehensive understanding of the aviation market, combined with his technical expertise, ensures that clients receive expert guidance throughout the aircraft acquisition or sales process.
