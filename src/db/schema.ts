@@ -1,6 +1,5 @@
 import { pgTable, uuid, varchar, integer, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-import { z } from 'zod'
 
 // Create enum for plane status
 export const planeStatusEnum = pgEnum('plane_status', ['sale', 'pending', 'sold'])

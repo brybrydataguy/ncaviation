@@ -2,12 +2,14 @@ import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
 import * as schema from './schema'
 
-if (!process.env.POSTGRES_URL) {
-  throw new Error('POSTGRES_URL environment variable is required')
+const databaseUrl = process.env.DATABASE_URL
+
+if (!databaseUrl) {
+  throw new Error('POSTGRES_URL or DATABASE_URL environment variable is required')
 }
 
 // Create the connection
-const sql = neon(process.env.POSTGRES_URL)
+const sql = neon(databaseUrl)
 
 // Create drizzle instance
 export const db = drizzle(sql, { schema })

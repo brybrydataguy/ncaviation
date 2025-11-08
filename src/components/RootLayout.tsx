@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { motion, MotionConfig, useReducedMotion } from 'framer-motion'
-import { useUser } from '@stackframe/stack'
+// Removed Stack Auth import - not needed in RootLayout
 
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
@@ -60,7 +60,6 @@ function Header({
   invert?: boolean
 }) {
   let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
-  const user = useUser()
 
   return (
     <Container>
