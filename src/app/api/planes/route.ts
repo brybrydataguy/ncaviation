@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPlanes, createPlane, updatePlane, deletePlane } from '@/lib/planes'
-import { uploadImage, uploadImages } from '@/lib/storage'
+import { uploadImage, uploadImages } from '@/lib/blob-storage'
 import type { Aircraft } from '@/types/plane'
 
 // Ensure we're running server-side
@@ -38,7 +38,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Main image must be a file' }, { status: 400 })
     }
 
-    const additionalImageFiles = formData.getAll('images').filter((file): file is File => file instanceof File)
+    // Validate main image is not empty
+    if (mainImageFile.size === 0) {
+      return NextResponse.json({ error: 'Main image cannot be empty' }, { status: 400 })
+    }
+
+    // Filter additional images to only include valid files (not empty)
+    const additionalImageFiles = formData.getAll('images')
+      .filter((file): file is File => file instanceof File)
+      .filter(file => file.size > 0 && file.name !== '')
     
     // Validate required fields
     const name = formData.get('name')
@@ -87,7 +95,35 @@ export async function PUT(req: NextRequest) {
     if (!id) {
       return NextResponse.json({ error: 'Missing plane ID' }, { status: 400 })
     }
-    const updatedData: Partial<Aircraft> = await req.json()
+
+    // Check content type to determine how to parse the request
+    const contentType = req.headers.get('content-type') || ''
+    let updatedData: Partial<Aircraft>
+
+    if (contentType.includes('multipart/form-data')) {
+      // Handle FormData (from admin page status updates)
+      const formData = await req.formData()
+      updatedData = {}
+
+      const status = formData.get('status')
+      if (status && typeof status === 'string' && ['sale', 'pending', 'sold'].includes(status)) {
+        updatedData.status = status as Aircraft['status']
+      }
+
+      const name = formData.get('name')
+      if (name && typeof name === 'string') {
+        updatedData.name = name
+      }
+
+      const price = formData.get('price')
+      if (price && !isNaN(Number(price))) {
+        updatedData.price = Number(price)
+      }
+    } else {
+      // Handle JSON (default)
+      updatedData = await req.json()
+    }
+
     await updatePlane(id, updatedData)
     return NextResponse.json({ message: 'Plane updated successfully' })
   } catch (error) {

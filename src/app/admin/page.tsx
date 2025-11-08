@@ -1,19 +1,17 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { useSession } from "next-auth/react"
+import { useUser } from '@stackframe/stack'
 import { Container } from "@/components/Container"
 import { PageIntro } from "@/components/PageIntro"
 import type { Aircraft } from '@/types/plane'
 import Image from 'next/image'
 
 export default function AdminPage(): React.ReactElement {
-  const { data: session, status } = useSession()
+  const user = useUser()
   const [planes, setPlanes] = useState<(Aircraft & { id: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
-
-  console.log(session)
   useEffect(() => {
     async function fetchPlanes() {
      try {
@@ -59,7 +57,7 @@ export default function AdminPage(): React.ReactElement {
     }
   }
 
-  if (status === "loading" || loading) {
+  if (loading) {
     return (
       <Container className="mt-24 sm:mt-32 lg:mt-40">
         <div className="flex justify-center">
@@ -69,11 +67,17 @@ export default function AdminPage(): React.ReactElement {
     )
   }
 
-  if (!session) {
+  if (!user) {
     return (
       <Container className="mt-24 sm:mt-32 lg:mt-40">
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center justify-center space-y-4">
           <p className="text-red-500">Access Denied. Please log in.</p>
+          <a
+            href="/handler/sign-in?after_auth_return_to=/admin"
+            className="text-blue-500 hover:text-blue-600 underline"
+          >
+            Sign in to continue
+          </a>
         </div>
       </Container>
     )

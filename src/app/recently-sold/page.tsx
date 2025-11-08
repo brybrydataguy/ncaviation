@@ -24,7 +24,7 @@ async function getSoldPlanes(host: string): Promise<Aircraft[]> {
 }
 
 export default async function RecentlySoldPage() {
-  const headersList = headers()
+  const headersList = await headers()
   const host = headersList.get('host') || 'localhost:3000'
   const soldPlanes = await getSoldPlanes(host)
 
