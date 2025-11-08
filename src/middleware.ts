@@ -9,8 +9,11 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    // Get the user from Stack Auth
-    const user = await stackServerApp.getUser({ req })
+    // Get the user from Stack Auth - pass the Next.js request object
+    const user = await stackServerApp.getUser({
+      or: 'return-null',
+      tokenStore: req
+    })
 
     // Check if user is authenticated
     if (!user) {

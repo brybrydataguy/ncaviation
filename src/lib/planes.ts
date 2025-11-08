@@ -1,10 +1,11 @@
-import { db, planes, planeImages } from '@/db'
+import { getDb, planes, planeImages } from '@/db'
 import { eq, desc, inArray } from 'drizzle-orm'
 import { Aircraft } from '@/types/plane'
 
 // Create a new plane with images
 export async function createPlane(data: Aircraft): Promise<string> {
   try {
+    const db = getDb()
     // Insert the plane
     const [newPlane] = await db.insert(planes).values({
       name: data.name,
@@ -33,6 +34,7 @@ export async function createPlane(data: Aircraft): Promise<string> {
 // Get all planes with their images
 export async function getPlanes(): Promise<(Aircraft & { id: string })[]> {
   try {
+    const db = getDb()
     // Get all planes
     const planesData = await db
       .select()
@@ -74,6 +76,7 @@ export async function getPlanes(): Promise<(Aircraft & { id: string })[]> {
 // Get planes by status
 export async function getPlanesByStatus(status: Aircraft['status']): Promise<(Aircraft & { id: string })[]> {
   try {
+    const db = getDb()
     const planesData = await db
       .select()
       .from(planes)
@@ -114,6 +117,7 @@ export async function getPlanesByStatus(status: Aircraft['status']): Promise<(Ai
 // Get a single plane by ID
 export async function getPlane(id: string): Promise<Aircraft & { id: string }> {
   try {
+    const db = getDb()
     const [plane] = await db
       .select()
       .from(planes)
@@ -148,6 +152,7 @@ export async function getPlane(id: string): Promise<Aircraft & { id: string }> {
 // Update a plane
 export async function updatePlane(id: string, data: Partial<Aircraft>): Promise<string> {
   try {
+    const db = getDb()
     const updateData: any = {}
     if (data.name !== undefined) updateData.name = data.name
     if (data.price !== undefined) updateData.price = data.price
@@ -189,6 +194,7 @@ export async function updatePlane(id: string, data: Partial<Aircraft>): Promise<
 // Delete a plane
 export async function deletePlane(id: string): Promise<string> {
   try {
+    const db = getDb()
     // Images will be cascade deleted due to foreign key constraint
     await db.delete(planes).where(eq(planes.id, id))
     return id
