@@ -95,7 +95,35 @@ export async function PUT(req: NextRequest) {
     if (!id) {
       return NextResponse.json({ error: 'Missing plane ID' }, { status: 400 })
     }
-    const updatedData: Partial<Aircraft> = await req.json()
+
+    // Check content type to determine how to parse the request
+    const contentType = req.headers.get('content-type') || ''
+    let updatedData: Partial<Aircraft>
+
+    if (contentType.includes('multipart/form-data')) {
+      // Handle FormData (from admin page status updates)
+      const formData = await req.formData()
+      updatedData = {}
+
+      const status = formData.get('status')
+      if (status && typeof status === 'string' && ['sale', 'pending', 'sold'].includes(status)) {
+        updatedData.status = status as Aircraft['status']
+      }
+
+      const name = formData.get('name')
+      if (name && typeof name === 'string') {
+        updatedData.name = name
+      }
+
+      const price = formData.get('price')
+      if (price && !isNaN(Number(price))) {
+        updatedData.price = Number(price)
+      }
+    } else {
+      // Handle JSON (default)
+      updatedData = await req.json()
+    }
+
     await updatePlane(id, updatedData)
     return NextResponse.json({ message: 'Plane updated successfully' })
   } catch (error) {
