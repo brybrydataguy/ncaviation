@@ -1,9 +1,8 @@
 "use client"
 
 import { type Metadata } from 'next'
-import { SessionProvider } from "next-auth/react"
+import { StackAuthProvider } from '@/lib/stack-auth-client'
 import { RootLayout } from '@/components/RootLayout'
-import { firebaseApp, getFirebaseAnalytics } from '@/lib/firebase'
 
 import '@/styles/tailwind.css'
 
@@ -11,9 +10,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full bg-neutral-950 text-base antialiased">
       <body className="flex min-h-full flex-col">
-        <SessionProvider>
+        <StackAuthProvider>
           <RootLayout>{children}</RootLayout>
-        </SessionProvider>
+        </StackAuthProvider>
       </body>
     </html>
   )

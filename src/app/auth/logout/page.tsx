@@ -1,18 +1,19 @@
 "use client"
 
 import React, { useEffect } from 'react'
-import { signOut } from "next-auth/react"
+import { useStackApp } from '@stackframe/stack'
 import { useRouter } from "next/navigation"
 import { Container } from '../../../components/Container'
 
 export default function LogoutPage() {
   const router = useRouter()
+  const stackApp = useStackApp()
 
   useEffect(() => {
-    signOut({ redirect: false }).then(() => {
+    stackApp.signOut().then(() => {
       router.push("/")
     })
-  }, [router])
+  }, [router, stackApp])
 
   return (
     <Container className="mt-24 sm:mt-32 lg:mt-40">

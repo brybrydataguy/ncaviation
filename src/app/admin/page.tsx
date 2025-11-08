@@ -1,19 +1,18 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { useSession } from "next-auth/react"
+import { useUser, useStackApp } from '@stackframe/stack'
 import { Container } from "@/components/Container"
 import { PageIntro } from "@/components/PageIntro"
 import type { Aircraft } from '@/types/plane'
 import Image from 'next/image'
 
 export default function AdminPage(): React.ReactElement {
-  const { data: session, status } = useSession()
+  const user = useUser()
+  const stackApp = useStackApp()
   const [planes, setPlanes] = useState<(Aircraft & { id: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
-
-  console.log(session)
   useEffect(() => {
     async function fetchPlanes() {
      try {
@@ -59,7 +58,7 @@ export default function AdminPage(): React.ReactElement {
     }
   }
 
-  if (status === "loading" || loading) {
+  if (loading) {
     return (
       <Container className="mt-24 sm:mt-32 lg:mt-40">
         <div className="flex justify-center">
@@ -69,7 +68,7 @@ export default function AdminPage(): React.ReactElement {
     )
   }
 
-  if (!session) {
+  if (!user) {
     return (
       <Container className="mt-24 sm:mt-32 lg:mt-40">
         <div className="flex justify-center">

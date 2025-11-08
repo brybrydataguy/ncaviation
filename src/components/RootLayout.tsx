@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { motion, MotionConfig, useReducedMotion } from 'framer-motion'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { useUser } from '@stackframe/stack'
 
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
@@ -60,7 +60,7 @@ function Header({
   invert?: boolean
 }) {
   let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
-  const { data: session } = useSession()
+  const user = useUser()
 
   return (
     <Container>

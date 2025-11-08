@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPlanes, createPlane, updatePlane, deletePlane } from '@/lib/planes'
-import { uploadImage, uploadImages } from '@/lib/storage'
+import { uploadImage, uploadImages } from '@/lib/blob-storage'
 import type { Aircraft } from '@/types/plane'
 
 // Ensure we're running server-side
