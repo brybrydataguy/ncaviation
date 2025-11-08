@@ -22,19 +22,20 @@ npm run db:studio    # Open Drizzle Studio for database management
 
 ## Architecture
 
-This is a Next.js 14 application for NC Aviation, an aircraft sales platform built with:
-- **Frontend:** Next.js App Router, React 18, TypeScript, Tailwind CSS
+This is a Next.js 15 application for NC Aviation, an aircraft sales platform built with:
+- **Frontend:** Next.js App Router, React 19, TypeScript, Tailwind CSS
 - **Database:** Neon PostgreSQL with Drizzle ORM for aircraft listings
 - **Storage:** Vercel Blob Storage for aircraft images
 - **Authentication:** Stack Auth for admin access
-- **Email:** SendGrid for contact form submissions
+- **Email:** Resend for contact form submissions
 
 ### Key Architectural Patterns
 
-1. **App Router Structure:** Uses Next.js 14 App Router with file-based routing in `src/app/`
+1. **App Router Structure:** Uses Next.js 15 App Router with file-based routing in `src/app/`
    - Public pages: `/`, `/for-sale`, `/recently-sold`, `/about`, `/contact`
-   - Admin section: `/admin` (protected by NextAuth)
-   - API routes: `/api/planes`, `/api/contact`, `/api/auth`
+   - Admin section: `/admin` (protected by Stack Auth)
+   - API routes: `/api/planes`, `/api/contact`
+   - Auth handler: `/handler/[...stack]` (Stack Auth)
 
 2. **Data Layer:**
    - Aircraft data managed through Drizzle ORM with Neon PostgreSQL via `src/lib/planes.ts`
@@ -54,13 +55,14 @@ This is a Next.js 14 application for NC Aviation, an aircraft sales platform bui
 ## Environment Variables
 
 Required in `.env.local`:
-- `POSTGRES_URL` - Neon database connection string
-- `POSTGRES_URL_NON_POOLING` - Non-pooling connection for migrations
+- `DATABASE_URL` - Neon database connection string (pooled)
+- `DATABASE_URL_UNPOOLED` - Non-pooling connection for migrations
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage token
 - `NEXT_PUBLIC_STACK_PROJECT_ID` - Stack Auth project ID
 - `NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY` - Stack Auth client key
 - `STACK_SECRET_SERVER_KEY` - Stack Auth server key
-- Email service variables as needed
+- `RESEND_API_KEY` - Resend API key for email service
+- `CONTACT_FORM_EMAIL` - Email address to receive contact form submissions
 
 ## Important Context
 
