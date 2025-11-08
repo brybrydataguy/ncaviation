@@ -38,7 +38,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Main image must be a file' }, { status: 400 })
     }
 
-    const additionalImageFiles = formData.getAll('images').filter((file): file is File => file instanceof File)
+    // Validate main image is not empty
+    if (mainImageFile.size === 0) {
+      return NextResponse.json({ error: 'Main image cannot be empty' }, { status: 400 })
+    }
+
+    // Filter additional images to only include valid files (not empty)
+    const additionalImageFiles = formData.getAll('images')
+      .filter((file): file is File => file instanceof File)
+      .filter(file => file.size > 0 && file.name !== '')
     
     // Validate required fields
     const name = formData.get('name')

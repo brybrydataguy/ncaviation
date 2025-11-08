@@ -13,6 +13,11 @@ if (typeof window !== 'undefined') {
  */
 export async function uploadImage(file: File, path: string): Promise<string> {
   try {
+    // Validate file before upload
+    if (!file || file.size === 0 || !file.name) {
+      throw new Error('Invalid file: File is empty or has no name')
+    }
+
     console.log('Starting image upload to path:', path)
 
     // Convert File to Buffer for Vercel Blob
@@ -21,7 +26,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
 
     const blob = await put(path, buffer, {
       access: 'public',
-      contentType: file.type,
+      contentType: file.type || 'image/jpeg',
     })
 
     console.log('Image upload complete. URL:', blob.url)
@@ -42,8 +47,16 @@ export async function uploadImage(file: File, path: string): Promise<string> {
  */
 export async function uploadImages(files: File[], basePath: string): Promise<string[]> {
   try {
-    console.log('Starting batch upload of', files.length, 'images to base path:', basePath)
-    const uploadPromises = files.map((file, index) => {
+    // Filter out invalid files (empty or no name)
+    const validFiles = files.filter(file => file && file.size > 0 && file.name)
+
+    if (validFiles.length === 0) {
+      console.log('No valid files to upload')
+      return []
+    }
+
+    console.log('Starting batch upload of', validFiles.length, 'images to base path:', basePath)
+    const uploadPromises = validFiles.map((file, index) => {
       const path = `${basePath}/${Date.now()}-${index}-${file.name}`
       console.log('Queuing upload for file:', file.name, 'to path:', path)
       return uploadImage(file, path)
