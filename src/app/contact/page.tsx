@@ -123,10 +123,10 @@ function ContactDetails() {
           <dt className="font-semibold text-neutral-950">Email</dt>
           <dd>
             <Link
-              href="mailto:bryantravissmith@gmail.com"
+              href="mailto:bob@ncaviation.com "
               className="text-neutral-600 hover:text-neutral-950"
             >
-              bryantravissmith@gmail.com
+             bob@ncaviation.com
             </Link>
           </dd>
         </div>
